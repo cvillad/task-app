@@ -4,7 +4,7 @@ const router = new express.Router();
 
 router.get('/users', async (req, res) => {
     try {
-        users = await User.find({});
+        const users = await User.find({});
         res.send(users);
     } catch (error) {
         res.status(500).send(error);
@@ -50,7 +50,11 @@ router.patch('/users/:id', async (req, res) => {
     }
 
     try {
-        const user = await User.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true });
+        const user = await User.findById(_id);
+
+        updates.forEach((field) => user[field] = req.body[field]);
+
+        await user.save();
 
         if (!user) {
             return res.status(400).send( { error: "User not found" } );
