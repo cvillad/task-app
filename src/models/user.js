@@ -40,18 +40,15 @@ const userSchema = new mongoose.Schema({
       }
     }
   },
-  tokens: [{
-    token: {
-      type: String,
-      required: true
-    }
-  }]
+  token: {
+    type: String
+  }
 })
 
 userSchema.methods.generateAuthToken = async function () {
   const token = jwt.sign({ _id: this._id }, 'test-key')
 
-  this.tokens = this.tokens.concat({ token })
+  this.token = token
   await this.save()
 
   return token

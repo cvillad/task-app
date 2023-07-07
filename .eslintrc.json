@@ -9,6 +9,7 @@
         "ecmaVersion": "latest"
     },
     "rules": {
-        "no-return-assign": 0
+        "no-return-assign": 0,
+        "max-len": 2
     }
 }

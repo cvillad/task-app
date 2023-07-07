@@ -11,10 +11,10 @@ router.post('/users', async (req, res) => {
     const token = await user.generateAuthToken()
     res.send({
       success: true,
-      data: { user, token }
+      data: { token }
     })
   } catch (error) {
-    res.status(400).send({
+    res.status(422).send({
       success: false,
       error: error.message
     })
@@ -25,13 +25,25 @@ router.post('/users/login', async (req, res) => {
   try {
     const user = await User.findByCredentials(req.body.email, req.body.password)
     const token = await user.generateAuthToken()
-    res.send({ user, token })
+    res.send({ success: true, data: { token } })
   } catch (error) {
-    res.status(400).send(error.message)
+    res.status(422).send({
+      success: false,
+      error: error.message
+    })
   }
 })
 
-router.get('/users/me', auth, async (req, res) => res.send(req.user))
+router.get('/users/me', auth, async (req, res) => {
+  try {
+    res.send({ success: true, data: req.user })
+  } catch (error) {
+    res.status(422).send({
+      success: false,
+      error: error.message
+    })
+  }
+})
 
 router.get('/users/:id', auth, async (req, res) => {
   const _id = req.params.id
@@ -39,12 +51,12 @@ router.get('/users/:id', auth, async (req, res) => {
     const user = await User.findById(_id)
 
     if (!user) {
-      return res.status(400).send({ error: 'User not found' })
+      return res.status(422).send({ success: false, error: 'User not found' })
     }
 
-    res.send(user)
+    res.send({ success: true, data: { user } })
   } catch (error) {
-    res.status(500).send(error)
+    res.status(422).send({ success: false, error: error.message })
   }
 })
 
@@ -56,7 +68,7 @@ router.patch('/users/:id', auth, async (req, res) => {
   const isValid = updates.every((update) => allowedUpdates.includes(update))
 
   if (!isValid) {
-    return res.status(400).send({ error: 'Invalid field to update' })
+    return res.status(422).send({ error: 'Invalid field to update' })
   }
 
   try {
@@ -67,12 +79,15 @@ router.patch('/users/:id', auth, async (req, res) => {
     await user.save()
 
     if (!user) {
-      return res.status(400).send({ error: 'User not found' })
+      return res.status(422).send({ success: true, error: 'User not found' })
     }
 
-    res.send(user)
+    res.send({ success: true, data: { user } })
   } catch (error) {
-    res.status(400).send(error)
+    res.status(422).send({
+      success: false,
+      error: error.message
+    })
   }
 })
 
@@ -83,12 +98,15 @@ router.delete('/users/:id', auth, async (req, res) => {
     const user = await User.findByIdAndDelete(_id)
 
     if (!user) {
-      return res.status(400).send({ error: 'User not found' })
+      return res.status(422).send({ success: false, error: 'User not found' })
     }
 
-    res.send(user)
+    res.send({ success: true })
   } catch (error) {
-    res.status(400).send(error)
+    res.status(422).send({
+      success: false,
+      error: error.message
+    })
   }
 })
 

@@ -5,9 +5,9 @@ const router = new express.Router()
 router.get('/tasks', async (req, res) => {
   try {
     const tasks = await Task.find({})
-    res.send(tasks)
+    res.send({ success: true, data: tasks })
   } catch (error) {
-    res.status(500).send(error)
+    res.status(4220).send({ success: false, error: error.message })
   }
 })
 
@@ -18,12 +18,12 @@ router.get('/tasks/:id', async (req, res) => {
     const task = Task.findById(_id)
 
     if (!task) {
-      return res.status(400).send({ error: 'Task not found' })
+      return res.status(422).send({ success: false, error: 'Task not found' })
     }
 
-    res.send(task)
+    res.send({ success: true, data: task })
   } catch (error) {
-    res.status(500).send(error)
+    res.status(422).send({ success: false, error: error.message })
   }
 })
 
@@ -32,9 +32,9 @@ router.post('/tasks', async (req, res) => {
 
   try {
     await task.save()
-    res.send(task)
+    res.send({ sucess: true, data: task })
   } catch (error) {
-    res.status(400).send(error)
+    res.status(422).send({ success: false, error: error.message })
   }
 })
 
@@ -46,7 +46,7 @@ router.patch('/tasks/:id', async (req, res) => {
   const isValid = updates.every((update) => allowedUpdates.includes(update))
 
   if (!isValid) {
-    return res.status(400).send({ error: 'Invalid field to update' })
+    return res.status(422).send({ error: 'Invalid field to update' })
   }
 
   try {
@@ -57,12 +57,12 @@ router.patch('/tasks/:id', async (req, res) => {
     await task.save()
 
     if (!task) {
-      return res.status(400).send({ error: 'Task not found' })
+      return res.status(422).send({ success: false, error: 'Task not found' })
     }
 
-    res.send(task)
+    res.send({ success: true, data: { task } })
   } catch (error) {
-    res.status(400).send(error)
+    res.status(422).send({ success: false, error: error.message })
   }
 })
 
@@ -73,12 +73,12 @@ router.delete('/tasks/:id', async (req, res) => {
     const task = await Task.findByIdAndDelete(_id)
 
     if (!task) {
-      return res.status(400).send({ error: 'Task not found' })
+      return res.status(422).send({ success: false, error: 'Task not found' })
     }
 
-    res.send(task)
+    res.send({ success: true, data: task })
   } catch (error) {
-    res.status(400).send(error)
+    res.status(422).send({ success: false, error: error.message })
   }
 })
 
