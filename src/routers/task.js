@@ -60,7 +60,7 @@ router.patch('/tasks/:id', async (req, res) => {
       return res.status(422).send({ success: false, error: 'Task not found' })
     }
 
-    res.send({ success: true, data: { task } })
+    res.send({ success: true, data: task })
   } catch (error) {
     res.status(422).send({ success: false, error: error.message })
   }
