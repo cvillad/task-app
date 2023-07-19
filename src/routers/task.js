@@ -32,7 +32,7 @@ router.post('/tasks', async (req, res) => {
 
   try {
     await task.save()
-    res.send({ sucess: true, data: task })
+    res.send({ success: true, data: task })
   } catch (error) {
     res.status(422).send({ success: false, error: error.message })
   }
